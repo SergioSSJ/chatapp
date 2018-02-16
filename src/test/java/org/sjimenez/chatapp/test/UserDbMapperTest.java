@@ -85,6 +85,7 @@ public class UserDbMapperTest {
         User selectedUser = userMapper.selectUserById(1);
         assertEquals("Equal objects", user, selectedUser);
     }
+
     @Test
     public void selectUserByMail() {
         logger.info("Select user by id test");
