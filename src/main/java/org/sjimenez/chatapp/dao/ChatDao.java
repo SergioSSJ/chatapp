@@ -1,17 +1,14 @@
 package org.sjimenez.chatapp.dao;
 
 
-import org.apache.ibatis.annotations.*;
+
 import org.sjimenez.chatapp.mappers.UserMapper;
 import org.sjimenez.chatapp.model.Group;
 import org.sjimenez.chatapp.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
 import java.util.List;
-import java.util.Optional;
+
 
 @Component
 public class ChatDao {

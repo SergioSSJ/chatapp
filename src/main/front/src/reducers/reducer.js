@@ -29,10 +29,42 @@ export const showLogInModel = (state = { showLogInState: false }, action) => {
   }
 };
 
+export const showCreateGroupModel = (state = { showCreateGroupState: false }, action) => {
+
+  switch (action.type) {
+    case "CLOSE_CREATE_GROUP": {
+      return { showCreateGroupState: false };
+    }
+    case "SHOW_CREATE_GROUP": {
+      console.log('show create group')
+      return { showCreateGroupState: true };
+    }
+    default:
+      return state;
+  }
+};
+export const showAddUserToGroupModel = (state = { showAddUserToGroupState: false }, action) => {
+
+  switch (action.type) {
+    case "CLOSE_ADD_USER_TO_GROUP": {
+      console.log('show Add user to group')
+      return { showAddUserToGroupState: false };
+    }
+    case "SHOW_ADD_USER_TO_GROUP": {
+      console.log('show Add user to group')
+      return { showAddUserToGroupState: true };
+    }
+    default:
+      return state;
+  }
+};
+
 
 export const reducers = combineReducers({
   showLogInModel,
   showModel,
+  showCreateGroupModel,
+  showAddUserToGroupModel,
   
   routing:routerReducer
 });

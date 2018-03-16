@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { showSignIn,showLogIn } from "./actions/actions";
+import { showSignIn,showLogIn, showCreateGroup } from "./actions/actions";
 import SingInFormModal from "./components/modals/SingInFormModal";
 import LogInFormModal from "./components/modals/LogInFormModal";
 import { Panel, Button, ListGroup, ListGroupItem } from "react-bootstrap";
@@ -50,7 +50,9 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   showSignIn,
-  showLogIn
+  showLogIn,
+  showCreateGroup,
+  
 };
 
 const AppContainer = connect(mapStateToProps, mapDispatchToProps)(App);

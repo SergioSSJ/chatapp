@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -91,11 +90,11 @@ public class UserResourceController {
         }
         return new ResponseEntity<User>(userOptional.get(), HttpStatus.OK);
     }
-    @GetMapping("/getUserByMail/{mail}")
+    @GetMapping("/getUserByMail/{mail:.+}")
     public ResponseEntity<User> getUserById(@PathVariable("mail") String mail) {
         userOptional = Optional.ofNullable(chatDao.selectUserByMail(mail));
         if (!userOptional.isPresent()) {
-            logger.info("user with id to retrieve not found");
+            logger.info("user with mail "+mail+" to retrieve not found");
             return new ResponseEntity<User>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<User>(userOptional.get(), HttpStatus.OK);

@@ -1,15 +1,10 @@
 package org.sjimenez.chatapp.delegate;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-
-import javassist.NotFoundException;
-import org.sjimenez.chatapp.controllers.UserResourceController;
 import org.sjimenez.chatapp.dao.ChatDao;
 import org.sjimenez.chatapp.dao.GroupDao;
-import org.sjimenez.chatapp.mappers.GroupMapper;
 import org.sjimenez.chatapp.model.Group;
 import org.sjimenez.chatapp.model.User;
 import org.sjimenez.chatapp.model.UserGroupRelation;
@@ -17,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import javax.persistence.EntityNotFoundException;
 
@@ -31,11 +25,14 @@ public class GroupDelegate {
     ChatDao chatDao;
 
     public Group createGroup(String groupName) {
+        logger.warn("create group method"+groupName);
+
         Optional<Group> optionalGroup = groupDao.selectGroupByName(groupName);
         if (optionalGroup.isPresent()) {
             logger.warn("Duplicate group name"+groupName);
             throw new DuplicateKeyException("Duplicate group name");
         }
+
         Group group = new Group();
         group.setName(groupName);
         group.setCreation(LocalDate.now());

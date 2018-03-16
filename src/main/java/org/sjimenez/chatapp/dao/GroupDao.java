@@ -18,52 +18,57 @@ public class GroupDao {
     GroupMapper groupMapper;
 
     //insert
-    public int insertGroup(Group group){
+    public int insertGroup(Group group) {
         return groupMapper.insertGroup(group);
     }
-    public void insertUserGroupRelation(int idgroup,int iduser){
 
-        groupMapper.insertUserGroupRelation(idgroup,iduser);
+    public void insertUserGroupRelation(int idgroup, int iduser) {
+
+        groupMapper.insertUserGroupRelation(idgroup, iduser);
     }
+
     //selects
-    public Optional<Group> selectGroupById(int idgroup){
+    public Optional<Group> selectGroupById(int idgroup) {
         return Optional.ofNullable(groupMapper.selectGroupById(idgroup));
     }
-    public Optional<Group> selectGroupByName(String name){
+
+    public Optional<Group> selectGroupByName(String name) {
         return Optional.ofNullable(groupMapper.selectGroupByName(name));
     }
-    public List<UserGroupRelation> selectAllUserGroup(int idgroup){
+
+    public List<UserGroupRelation> selectAllUserGroup(int idgroup) {
         return groupMapper.selectAllUserGroup();
     }
-    public List<Group> selectAllGroups(){
+
+    public List<Group> selectAllGroups() {
         return groupMapper.selectAll();
     }
-    public Optional<UserGroupRelation> selectUserGroupRelation(int idgroup,int iduser){
-        return Optional.ofNullable(groupMapper.selectUserGroupRelation(idgroup,iduser));
+
+    public Optional<UserGroupRelation> selectUserGroupRelation(int idgroup, int iduser) {
+        return Optional.ofNullable(groupMapper.selectUserGroupRelation(idgroup, iduser));
     }
-    public List<Message> selectMessagesFromGroup(int idgroup){
+
+    public List<Message> selectMessagesFromGroup(int idgroup) {
         return groupMapper.selectMessagesFromGroup(idgroup);
     }
 
-    public  List<User> selectUsersById(int idgroup){
+    public List<User> selectUsersById(int idgroup) {
         return groupMapper.selectUsersById(idgroup);
     }
 
 
     //delete
-    public void deleteGroupById(int idgroup){
+    public void deleteGroupById(int idgroup) {
         groupMapper.deleteGroupById(idgroup);
     }
-    public void deleteUserFromGroup(int idgroup,int iduser){
-        groupMapper.deleteUserFromGroup(idgroup,iduser);
+
+    public void deleteUserFromGroup(int idgroup, int iduser) {
+        groupMapper.deleteUserFromGroup(idgroup, iduser);
     }
 
     //update
-    public void updateGroup(String newname,String oldname){
-        groupMapper.updateGroup(newname,oldname);
+    public void updateGroup(String newname, String oldname) {
+        groupMapper.updateGroup(newname, oldname);
     }
-
-
-
 
 }

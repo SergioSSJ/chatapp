@@ -14,3 +14,17 @@ export const showSignIn = () => ({
 export const closeSignIn = () => ({
   type: "CLOSE_SIGN_IN"
 });
+export const showCreateGroup = () => ({
+  type: "SHOW_CREATE_GROUP"
+});
+
+export const closeCreateGroup = () => ({
+  type: "CLOSE_CREATE_GROUP"
+});
+export const showAddUserToGroup = () => ({
+  type: "SHOW_ADD_USER_TO_GROUP"
+});
+
+export const  closeAddUserToGroup = () => ({
+  type: "CLOSE_ADD_USER_TO_GROUP"
+});
