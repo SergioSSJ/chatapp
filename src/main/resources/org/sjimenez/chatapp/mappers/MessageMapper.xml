@@ -17,10 +17,21 @@
 <mapper namespace="org.sjimenez.chatapp.mappers.MessageMapper">
 
     <insert id="insertMessage">
-        insert into chat.message(content,creation,idgroup_message) values(#{content},#{creation},#{idgroup})
+        insert into chat.message(content,creation,idgroup_message,sender) values(#{content},#{creation},#{idgroup},#{sender})
     </insert>
 
-    <select id="selectAll"  resultType="org.sjimenez.chatapp.model.Message" >select * from chat.message </select>
+
+
+
+
+    <resultMap id="resultMessages" type="org.sjimenez.chatapp.model.Message">
+        <result property="idgroup" column="idgroup"/>
+        <result property="content" column="content"/>
+        <result property="creation" column="creation"/>
+        <result property="sender" column="sender"/>
+    </resultMap>
+
+    <select id="selectAll"  resultMap="resultMessages" resultType="org.sjimenez.chatapp.model.Message" >select * from chat.message </select>
 
 
 </mapper>

@@ -1,17 +1,11 @@
 import React from "react";
-import {
-  FormGroup,
-  ControlLabel,
-  FormControl,
-  Modal,
-  Button
-} from "react-bootstrap";
+import { FormGroup, ControlLabel, FormControl, Modal, Button } from "react-bootstrap";
 import { Panel, Table, Grid, Row, Col } from "react-bootstrap";
 import SimpleTextFormControl from "./SimpleTextFormControl";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
 import moment from "moment";
-import { showCreateGroup, closeCreateGroup,showAddUserToGroup } from "../actions/actions";
+import { showCreateGroup, closeCreateGroup, showAddUserToGroup } from "../actions/actions";
 import { connect } from "react-redux";
 import CreateGroupFormModal from "./modals/CreateGroupModal";
 import AddUserToGroupModal from "./modals/AddUserToGroupModal";
@@ -26,10 +20,6 @@ const LogoOut = () => (
 );
 
 let AppPanel = (function() {
-  var serverUrl = "http://localhost:8080/socket";
-  var title = "WebSockets chat";
-  var stompClient;
-
   let MessageForm = (function() {
     return class NameTextForm extends React.Component {
       constructor(props) {
@@ -65,7 +55,6 @@ let AppPanel = (function() {
 
   return class AppPanel extends React.Component {
     constructor(props) {
-      console.log("chatpanelconstructor");
       super(props);
       this.serverUrl = "http://localhost:8080/socket";
       this.title = "WebSockets chat";
@@ -74,16 +63,13 @@ let AppPanel = (function() {
       this.subscription;
       this.currentChat;
 
-      this.initializeWebSocketConnection = this.initializeWebSocketConnection.bind(
-        this
-      );
-      this.sendMessage = this.sendMessage.bind(this);
-      this.printInConsole = this.printInConsole.bind(this);
+      this.initializeWebSocketConnection = this.initializeWebSocketConnection.bind(this);
+      this.sendChatMessage = this.sendChatMessage.bind(this);
       this.createGroup = this.createGroup.bind(this);
       this.addUserToGroup = this.addUserToGroup.bind(this);
       this.showlog = this.showlog.bind(this);
-      this.append = this.append.bind(this);
       this.onResponse = this.onResponse.bind(this);
+
       this.initializeWebSocketConnection(this.onConnection, this.onResponse);
 
       this.state = {
@@ -92,59 +78,45 @@ let AppPanel = (function() {
         messages: [],
         groups: [],
         isConnected: false,
-        groupname:"Select a groupchat",
-        groupselected:true
+        groupname: "Select a groupchat",
+        groupselected: true
       };
     }
 
-    componentWillMount() {}
-
-
-
-
-
-
     createGroup() {
-      //this.loadGroups();
-console.log('show create group modal')
-      
       this.props.showCreateGroup();
     }
 
-addUserToGroup(){
-
-  console.log('show add user to group')
-      
+    addUserToGroup() {
       this.props.showAddUserToGroup();
-
-}
+    }
 
     showlog(event, id) {
       console.log(event);
       console.log(id);
       console.log("log");
     }
+
     loadGroupsFromUser() {
-      console.log("loadGroupFromUser");
       var thiss = this;
       let groups = this.state.groups;
-      console.log("user_name" + thiss.user_name);
-      fetch(
-        `http://localhost:8080/user/resources/selectgroups/${this.user_name}`,
-        {
-          credentials: "same-origin"
-        }
-      )
+      fetch(`http://localhost:8080/user/resources/selectgroups/${this.user_name}`, {
+        credentials: "same-origin"
+      })
         .then(function(response) {
+
+          if (!response.ok) {
+            this.chatErrorManager(response.status);
+            throw Error(response.statusText);
+          }
+
           return response.json();
         })
         .then(function(myJson) {
           console.log(myJson);
-
           thiss.setState({
             groups: myJson
           });
-          console.log(myJson);
         })
         .catch(error => {
           console.log("Error");
@@ -157,40 +129,23 @@ addUserToGroup(){
       let groups = this.state.groups;
       this.loadGroupsFromUser();
     }
-    changeWebSocketConnection(
-      onConnectionCallback,
-      onResponseCallback,
-      groupname
-    ) {
+    changeWebSocketConnection(onConnectionCallback, onResponseCallback, groupname) {
       if (this.subscription != null) {
         console.log("unsubscribe");
         this.subscription.unsubscribe();
       }
-      console.dir(this.subscription);
-      console.log("change");
-
-      console.log(this.serverUrl);
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       let that = this;
 
       this.stompClient.connect({}, function(frame) {
-        console.log(frame);
-        console.dir(frame);
-        console.log("frame" + frame);
         that.user_name = frame.headers["user-name"];
-        console.log("username" + that.user_name);
-        console.dir(this.user_name);
-        that.subscription = that.stompClient.subscribe(
-          `/chat/${groupname}`,
-          message => {
-            console.log("responseresponse");
-            if (message.body) {
-              onResponseCallback(message);
-              console.log("MessageReceivedchange" + message.body);
-            }
+        that.subscription = that.stompClient.subscribe(`/chat/${groupname}`, message => {
+          if (message.body) {
+            onResponseCallback(message);
+            console.log("MessageReceivedchange" + message.body);
           }
-        );
+        });
       });
     }
 
@@ -198,55 +153,39 @@ addUserToGroup(){
       var thiss = this;
       let groups = this.state.groups;
       console.log("user_name" + thiss.user_name);
-      fetch(
-        `http://localhost:8080/messageToGroup/${name}`,
-        {
-          credentials: "same-origin"
-        }
-      )
+      fetch(`http://localhost:8080/messageToGroup/${name}`, {
+        credentials: "same-origin"
+      })
         .then(function(response) {
+          if (!response.ok) {
+            this.chatErrorManager(response.status);
+            throw Error(response.statusText);
+          }
           return response.json();
         })
         .then(function(myJson) {
           console.log(myJson);
 
-
           thiss.setState({
             messages: myJson,
-            groupname:name,
-            groupselected:false
+            groupname: name,
+            groupselected: false
           });
-
-          console.log(myJson);
         })
         .catch(error => {
-          console.log("Error");
+          console.log(`Error ${error}`);
         });
 
       this.changeWebSocketConnection(this.onConnection, this.onResponse, name);
-      console.log("onGroupClick", name);
       this.currentChat = name;
-
-
-
-
-
-
-
     }
 
     initializeWebSocketConnection(onConnectionCallback, onResponseCallback) {
-      console.log(this.serverUrl);
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       let that = this;
       this.stompClient.connect({}, function(frame) {
-        console.log(frame);
-        console.dir(frame);
-        console.log("frame" + frame);
         that.user_name = frame.headers["user-name"];
-        console.log("usernameee" + that.user_name);
-        console.dir(that.user_name);
         that.loadGroups();
         that.subscription = that.stompClient.subscribe("/chat", message => {
           if (message.body) {
@@ -256,17 +195,15 @@ addUserToGroup(){
         });
       });
     }
-    sendMessage(message) {
-      this.stompClient.send("/app/send/message", {}, message);
-    }
-    printInConsole() {
+
+    sendChatMessage() {
       var message = this.refs.MessageForm.state.name;
-      var creation= moment().format("YYYY-MM-DD");
+      var creation = moment().format("YYYY-MM-DD");
       var url = `http://localhost:8080/messageToGroup/${this.currentChat}`;
-      var data = 
-      {
-        content:message,
-        creation:creation
+      var data = {
+        content: message,
+        creation: creation,
+        sender: this.user_name
       };
       fetch(url, {
         method: "POST",
@@ -274,7 +211,7 @@ addUserToGroup(){
         headers: new Headers({
           "Content-Type": "application/json"
         }),
-        credentials:"same-origin"
+        credentials: "same-origin"
       })
         .then(response => {
           if (!response.ok) {
@@ -290,46 +227,47 @@ addUserToGroup(){
         .catch(error => {
           console.error("Error:", error);
         });
-      //
-
-
-      this.stompClient.send(
-        `/app/send/message/${this.currentChat}`,
-        {},
-        message
-      );
-      console.log(this.refs.MessageForm.state.name);
+      this.stompClient.send(`/app/send/message/${this.currentChat}`, {}, message);
+      console.log(`Sending message${this.refs.MessageForm.state.name}`);
     }
 
     onConnection() {}
 
     onResponse(message) {
-      console.log("On response callback");
-      console.log(message);
+      console.log(`New incoming ${message}`);
       var msg = {
-        name: JSON.parse(message.body).name,
-        message: JSON.parse(message.body).message,
+        sender: JSON.parse(message.body).name,
+        content: JSON.parse(message.body).message,
         id: message.headers["message-id"]
       };
-
-      console.log(msg);
-      console.dir(msg);
-      console.log("append");
-      console.log(this);
       let messages = this.state.messages;
       this.setState({
         messages: messages.concat(msg)
       });
     }
-    append() {
-      //var msg = {text: JSON.parse(message.body).content, id: message.headers["message-id"]};
-      var msg = { text: "text", id: 1 };
-      console.log("append");
-      let messages = this.state.messages;
-      this.setState({
-        messages: messages.concat(msg)
-      });
-      console.log(this.state);
+
+    chatErrorManager(errorCode) {
+      switch (errorCode) {
+        case 400: {
+          window.alert("Bad request please check that you are sending the field in the right way");
+          break;
+        }
+        case 401: {
+          window.alert("Not authorized");
+          break;
+        }
+        case 409: {
+          window.alert("You send and already existing email");
+          break;
+        }
+        case 500: {
+          window.alert("Server error please try again or send us a message");
+          break;
+        }
+        default: {
+          window.alert("Unespected error occured");
+        }
+      }
     }
 
     render() {
@@ -337,11 +275,7 @@ addUserToGroup(){
         return (
           <tr key={message.id}>
             <td name={message.name}>
-              <Button
-                onClick={this.showlog.bind(this, message.name, message.id)}
-              >
-                {message.name}-{message.message}
-              </Button>
+                {message.sender}-{message.content}
             </td>
           </tr>
         );
@@ -350,14 +284,7 @@ addUserToGroup(){
       let messageList = (
         <Panel>
           <div style={{ overflowY: "scroll", height: "500px" }}>
-            <Table
-              bordered
-              condensed
-              hover
-              responsive
-              striped
-              style={{ wordWrap: "break-word", tableLayout: "fixed" }}
-            >
+            <Table bordered condensed hover responsive striped style={{ wordWrap: "break-word", tableLayout: "fixed" }}>
               <tbody>
                 <tr>
                   <th style={{ width: "100%" }}>Messages</th>
@@ -374,14 +301,7 @@ addUserToGroup(){
         return (
           <tr key={group.idgroup}>
             <td>
-              <Button
-                onClick={this.onGroupClick.bind(
-                  this,
-                  group.idgroup,
-                  group.name,
-                  group.creation
-                )}
-              >
+              <Button onClick={this.onGroupClick.bind(this, group.idgroup, group.name, group.creation)}>
                 {group.name}-{group.creation}
               </Button>
             </td>
@@ -393,14 +313,7 @@ addUserToGroup(){
       let groupList = (
         <Panel>
           <div style={{ overflowY: "scroll", height: "500px" }}>
-            <Table
-              bordered
-              condensed
-              hover
-              responsive
-              striped
-              style={{ wordWrap: "break-word", tableLayout: "fixed" }}
-            >
+            <Table bordered condensed hover responsive striped style={{ wordWrap: "break-word", tableLayout: "fixed" }}>
               <tbody>
                 <tr>
                   <th style={{ width: "100%" }}>Groups</th>
@@ -411,32 +324,29 @@ addUserToGroup(){
           </div>
         </Panel>
       );
-//this.state.groupselected
+      //this.state.groupselected
       return (
         <Grid fluid={true}>
           <LogoOut />
           <Row className="show-grid">
             <Col md={4} xs={9}>
               <Panel>
-              <CreateGroupFormModal />
-              <AddUserToGroupModal currentChat={this.currentChat}/>
+                <CreateGroupFormModal user_name={this.user_name} history={this.props.history} />
+                <AddUserToGroupModal currentChat={this.currentChat} />
                 <Button onClick={this.createGroup} disabled={false}>
                   CreateGroup
                 </Button>
-                <Button onClick={this.addUserToGroup} disabled={false}>
+                <Button onClick={this.addUserToGroup} disabled={this.state.groupselected} >
                   AddUserToGroup
-                </Button>
-                <Button onClick={this.append} disabled={false}>
-                  Disconnect
                 </Button>
                 <SimpleTextFormControl readOnly={false} />
                 <MessageForm ref="MessageForm" />
-                <Button disabled={this.state.groupselected} onClick={this.printInConsole} >
+                <Button disabled={this.state.groupselected} onClick={this.sendChatMessage}>
                   Send
                 </Button>
               </Panel>
             </Col>
-            <ControlLabel>{this.state.groupname}</ControlLabel>
+            <h1><ControlLabel>{this.state.groupname}</ControlLabel></h1>
             <Col md={8} xs={9}>
               {messageList}
             </Col>
@@ -449,7 +359,6 @@ addUserToGroup(){
     }
   };
 })();
-
 
 const mapStateToProps = (state, ownProps) => ({
   shoModal: state.showModel,
@@ -464,8 +373,3 @@ const mapDispatchToProps = {
 
 const AppContainer = connect(mapStateToProps, mapDispatchToProps)(AppPanel);
 export default AppContainer;
-
-
-
-
-//export default AppPanel;

@@ -27,8 +27,6 @@ public class UserResourceController {
     @Autowired
     private ChatDao chatDao;
 
-    private UserMapper userMapper;
-
     private Optional<User> userOptional;
 
     @GetMapping("/all")
@@ -91,7 +89,7 @@ public class UserResourceController {
         return new ResponseEntity<User>(userOptional.get(), HttpStatus.OK);
     }
     @GetMapping("/getUserByMail/{mail:.+}")
-    public ResponseEntity<User> getUserById(@PathVariable("mail") String mail) {
+    public ResponseEntity<User> getUserByMail(@PathVariable("mail") String mail) {
         userOptional = Optional.ofNullable(chatDao.selectUserByMail(mail));
         if (!userOptional.isPresent()) {
             logger.info("user with mail "+mail+" to retrieve not found");

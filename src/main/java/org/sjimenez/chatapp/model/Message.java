@@ -9,6 +9,15 @@ public class Message {
     private String content;
     private LocalDate creation;
     private int idgroup;
+    private String sender;
+
+    public String getSender() {
+        return sender;
+    }
+
+    public void setSender(String sender) {
+        this.sender = sender;
+    }
 
     public int getIdmessage() {
         return idmessage;
@@ -41,6 +50,8 @@ public class Message {
     public void setIdgroup(int idgroup) {
         this.idgroup = idgroup;
     }
+
+
 
     @Override
     public boolean equals(Object o) {

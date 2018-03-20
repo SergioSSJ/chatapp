@@ -71,6 +71,7 @@ CREATE TABLE IF NOT EXISTS `group` (
     `content` VARCHAR(255) NULL,
     `creation` DATE NULL,
     `idgroup_message` INT NOT NULL,
+    `sender` VARCHAR(255) NULL,
     PRIMARY KEY (`idmessage`),
     CONSTRAINT `fk_idgroup_message`
       FOREIGN KEY (`idgroup_message`)

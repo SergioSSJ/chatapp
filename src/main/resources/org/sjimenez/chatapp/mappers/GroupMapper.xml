@@ -160,7 +160,7 @@
 
     <!--get all messages of a group-->
     <select id="selectMessagesFromGroup" resultType="org.sjimenez.chatapp.model.Message">
-        select distinct chat.message.idmessage, chat.message.content,chat.message.creation,chat.message.idgroup_message
+        select distinct chat.message.idmessage, chat.message.content,chat.message.creation,chat.message.idgroup_message,chat.message.sender
         from chat.message inner join chat.`group` on chat.message.idgroup_message=chat.`group`.idgroup and
         chat.message.idgroup_message=#{idgroup};
     </select>

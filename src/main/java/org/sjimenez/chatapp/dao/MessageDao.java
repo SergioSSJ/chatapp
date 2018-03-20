@@ -14,4 +14,6 @@ public class MessageDao {
     public void insertMessage(Message message){
         messageMapper.insertMessage(message);
     }
+
+
 }
