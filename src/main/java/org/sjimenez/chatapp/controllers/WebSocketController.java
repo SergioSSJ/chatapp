@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.stereotype.Controller;
 import java.security.Principal;
 
@@ -25,5 +26,14 @@ public class WebSocketController {
         System.out.println(groupname);
         System.out.println(message);
         this.template.convertAndSend("/chat/"+groupname,new ChatMessage(principal.getName(),message));
+        System.out.println(principal.getName());
+
+    }
+
+    //@SubscribeMapping( "/send/delete/{groupname}")
+    @MessageMapping("/send/delete/{groupname}")
+    public void onDeletedFromGroup(@DestinationVariable("groupname") String groupname,String user, Principal principal){
+        System.out.println("Deleted from"+groupname+"user:"+user);
+        this.template.convertAndSendToUser(principal.getName(),"/delete",user);
     }
 }

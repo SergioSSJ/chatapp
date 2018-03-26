@@ -17,6 +17,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     private ChatDao chatDao;
+
     @Autowired
     private PasswordEncoder PASSWORD_ENCODER;
 

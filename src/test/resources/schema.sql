@@ -16,7 +16,8 @@ CREATE TABLE IF NOT EXISTS `user` (
 CREATE TABLE IF NOT EXISTS  `group` (
   idgroup INT PRIMARY KEY  auto_increment,
   name VARCHAR(45) NULL,
- creation DATE NULL
+ creation DATE NULL,
+  admin VARCHAR(45) NULL,
  );
 
 
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS `group` (
   `idgroup` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NULL,
  `creation` DATE NULL,
+ `admin` VARCHAR(45) NULL,
   PRIMARY KEY (`idgroup`));
 */
 

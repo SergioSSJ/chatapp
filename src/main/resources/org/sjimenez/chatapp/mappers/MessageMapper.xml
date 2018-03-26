@@ -20,10 +20,6 @@
         insert into chat.message(content,creation,idgroup_message,sender) values(#{content},#{creation},#{idgroup},#{sender})
     </insert>
 
-
-
-
-
     <resultMap id="resultMessages" type="org.sjimenez.chatapp.model.Message">
         <result property="idgroup" column="idgroup"/>
         <result property="content" column="content"/>

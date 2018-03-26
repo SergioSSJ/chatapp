@@ -24,18 +24,18 @@ public class GroupDelegate {
     @Autowired
     ChatDao chatDao;
 
-    public Group createGroup(String groupName) {
-        logger.warn("create group method"+groupName);
+    public Group createGroup(String groupName,String admin) {
+        logger.warn("create group method"+groupName+" with admin"+admin);
 
         Optional<Group> optionalGroup = groupDao.selectGroupByName(groupName);
         if (optionalGroup.isPresent()) {
             logger.warn("Duplicate group name"+groupName);
             throw new DuplicateKeyException("Duplicate group name");
         }
-
         Group group = new Group();
         group.setName(groupName);
         group.setCreation(LocalDate.now());
+        group.setAdmin(admin);
         groupDao.insertGroup(group);
         return group;
     }
@@ -93,6 +93,8 @@ public class GroupDelegate {
     }
 
     public List<User> removeUserFromGroup(String groupName, List<Integer> userIdList) {
+        logger.info(groupName);
+        logger.info("tt"+userIdList);
         Optional<Group> group = groupDao.selectGroupByName(groupName);
         if (!group.isPresent()) {
             logger.warn("Group "+groupName+" not found ");
@@ -103,7 +105,7 @@ public class GroupDelegate {
             Optional<User> user = Optional.ofNullable(chatDao.selectUserById(iduser));
             if (!user.isPresent())
                 logger.warn("User with id " + iduser + " was not inserted in group because doesnt exist");
-            groupDao.insertUserGroupRelation(idgroup, iduser);
+            groupDao.deleteUserFromGroup(idgroup,iduser);
         });
         return groupDao.selectUsersById(idgroup);
     }

@@ -51,7 +51,7 @@ public class GroupDelegateTest {
     @Test(expected = DuplicateKeyException.class)
     public void createGroupTest() {
         when(groupDao.selectGroupByName("name1")).thenReturn(Optional.ofNullable(new Group()));
-        groupDelegate.createGroup("name1");
+        groupDelegate.createGroup("name1",null);
 
     }
 

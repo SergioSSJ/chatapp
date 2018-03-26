@@ -5,10 +5,11 @@ import SimpleTextFormControl from "./SimpleTextFormControl";
 import Stomp from "stompjs";
 import SockJS from "sockjs-client";
 import moment from "moment";
-import { showCreateGroup, closeCreateGroup, showAddUserToGroup } from "../actions/actions";
+import { showCreateGroup, closeCreateGroup, showAddUserToGroup ,showDeleteUserFromGroup} from "../actions/actions";
 import { connect } from "react-redux";
 import CreateGroupFormModal from "./modals/CreateGroupModal";
 import AddUserToGroupModal from "./modals/AddUserToGroupModal";
+import DeleteUserFromGroupModal from "./modals/DeleteUserFromGroupModal";
 
 const LogoOut = () => (
   <div>
@@ -59,18 +60,25 @@ let AppPanel = (function() {
       this.serverUrl = "http://localhost:8080/socket";
       this.title = "WebSockets chat";
       this.stompClient;
+      this.serverUrl1 = "http://localhost:8080/socket";
+      this.title1 = "WebSockets chat";
+      this.stompClient1;
       this.user_name;
       this.subscription;
       this.currentChat;
+      this.currentChatAdmin;
 
       this.initializeWebSocketConnection = this.initializeWebSocketConnection.bind(this);
+      this.initializeWebSocketListener = this.initializeWebSocketListener.bind(this);
       this.sendChatMessage = this.sendChatMessage.bind(this);
       this.createGroup = this.createGroup.bind(this);
       this.addUserToGroup = this.addUserToGroup.bind(this);
+      this.deleteUserFromGroup = this.deleteUserFromGroup.bind(this);
       this.showlog = this.showlog.bind(this);
       this.onResponse = this.onResponse.bind(this);
 
       this.initializeWebSocketConnection(this.onConnection, this.onResponse);
+      this.initializeWebSocketListener();
 
       this.state = {
         response: "",
@@ -79,7 +87,8 @@ let AppPanel = (function() {
         groups: [],
         isConnected: false,
         groupname: "Select a groupchat",
-        groupselected: true
+        groupselected: true,
+        currentChatAdmin:""
       };
     }
 
@@ -90,6 +99,12 @@ let AppPanel = (function() {
     addUserToGroup() {
       this.props.showAddUserToGroup();
     }
+
+    deleteUserFromGroup() {
+      this.props.showDeleteUserFromGroup();
+    }
+
+    
 
     showlog(event, id) {
       console.log(event);
@@ -126,18 +141,36 @@ let AppPanel = (function() {
     loadGroups() {
       console.log("loadGroupFromUser" + this.user_name);
       var thiss = this;
-      let groups = this.state.groups;
+      //let groups = this.state.groups;
       this.loadGroupsFromUser();
     }
     changeWebSocketConnection(onConnectionCallback, onResponseCallback, groupname) {
+
+      console.log(this.subscription)
+
       if (this.subscription != null) {
         console.log("unsubscribe");
         this.subscription.unsubscribe();
       }
+
+
+
+      this.subscription = this.stompClient.subscribe(`/chat/${groupname}`, message => {
+        if (message.body) {
+          onResponseCallback(message);
+          console.log("MessageReceivedchange" + message.body);
+        }
+      });
+
+
+
+
+
+
+/*
       let ws = new SockJS(this.serverUrl);
       this.stompClient = Stomp.over(ws);
       let that = this;
-
       this.stompClient.connect({}, function(frame) {
         that.user_name = frame.headers["user-name"];
         that.subscription = that.stompClient.subscribe(`/chat/${groupname}`, message => {
@@ -146,10 +179,19 @@ let AppPanel = (function() {
             console.log("MessageReceivedchange" + message.body);
           }
         });
-      });
+      });*/
+      this.initializeWebSocketListener();
     }
 
-    onGroupClick(idgroup, name, creation) {
+    onGroupClick(idgroup, name, creation,admin) {
+
+      console.log("admin"+admin)
+
+      this.currentChatAdmin=admin;
+      this.setState({
+        currentChatAdmin:admin
+      })
+
       var thiss = this;
       let groups = this.state.groups;
       console.log("user_name" + thiss.user_name);
@@ -179,6 +221,29 @@ let AppPanel = (function() {
       this.changeWebSocketConnection(this.onConnection, this.onResponse, name);
       this.currentChat = name;
     }
+
+//WEB SOCKET LISTENER
+    initializeWebSocketListener(){
+
+      console.log("initilalize web socket listener")
+      let ws = new SockJS(this.serverUrl);
+      this.stompClient = Stomp.over(ws);
+      let that = this;
+
+
+      this.stompClient.connect({}, function(frame) {
+       that.stompClient.subscribe("/user/delete", message => {
+          console.log("message listener "+message)
+          if (message.body) {
+            console.log("listenerlistener" + message.body);
+          }
+        });
+
+      });
+    }
+
+
+
 
     initializeWebSocketConnection(onConnectionCallback, onResponseCallback) {
       let ws = new SockJS(this.serverUrl);
@@ -227,6 +292,7 @@ let AppPanel = (function() {
         .catch(error => {
           console.error("Error:", error);
         });
+      console.log(this.stompClient);
       this.stompClient.send(`/app/send/message/${this.currentChat}`, {}, message);
       console.log(`Sending message${this.refs.MessageForm.state.name}`);
     }
@@ -234,6 +300,8 @@ let AppPanel = (function() {
     onConnection() {}
 
     onResponse(message) {
+
+      console.log(this.stompClient)
       console.log(`New incoming ${message}`);
       var msg = {
         sender: JSON.parse(message.body).name,
@@ -241,6 +309,8 @@ let AppPanel = (function() {
         id: message.headers["message-id"]
       };
       let messages = this.state.messages;
+      console.log(messages)
+      console.log(msg)
       this.setState({
         messages: messages.concat(msg)
       });
@@ -301,7 +371,7 @@ let AppPanel = (function() {
         return (
           <tr key={group.idgroup}>
             <td>
-              <Button onClick={this.onGroupClick.bind(this, group.idgroup, group.name, group.creation)}>
+              <Button onClick={this.onGroupClick.bind(this, group.idgroup, group.name, group.creation,group.admin)}>
                 {group.name}-{group.creation}
               </Button>
             </td>
@@ -333,15 +403,19 @@ let AppPanel = (function() {
               <Panel>
                 <CreateGroupFormModal user_name={this.user_name} history={this.props.history} />
                 <AddUserToGroupModal currentChat={this.currentChat} />
+                <DeleteUserFromGroupModal stompClient={this.stompClient} currentChat={this.currentChat} user_name={this.user_name} />
                 <Button onClick={this.createGroup} disabled={false}>
                   CreateGroup
                 </Button>
-                <Button onClick={this.addUserToGroup} disabled={this.state.groupselected} >
+                <Button onClick={this.addUserToGroup} disabled={this.state.groupselected||!(this.state.currentChatAdmin===this.user_name)} >
                   AddUserToGroup
+                </Button>
+                <Button onClick={this.deleteUserFromGroup} disabled={this.state.groupselected||!(this.state.currentChatAdmin===this.user_name)} >
+                  DeleteUserFromGroup
                 </Button>
                 <SimpleTextFormControl readOnly={false} />
                 <MessageForm ref="MessageForm" />
-                <Button disabled={this.state.groupselected} onClick={this.sendChatMessage}>
+                <Button bsStyle="primary" disabled={this.state.groupselected} onClick={this.sendChatMessage}>
                   Send
                 </Button>
               </Panel>
@@ -368,7 +442,8 @@ const mapStateToProps = (state, ownProps) => ({
 
 const mapDispatchToProps = {
   showCreateGroup,
-  showAddUserToGroup
+  showAddUserToGroup,
+  showDeleteUserFromGroup
 };
 
 const AppContainer = connect(mapStateToProps, mapDispatchToProps)(AppPanel);

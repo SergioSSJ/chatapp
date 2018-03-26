@@ -28,3 +28,10 @@ export const showAddUserToGroup = () => ({
 export const  closeAddUserToGroup = () => ({
   type: "CLOSE_ADD_USER_TO_GROUP"
 });
+export const showDeleteUserFromGroup = () => ({
+  type: "SHOW_DELETE_USER_FROM_GROUP"
+});
+
+export const  closeDeleteUserFromGroup = () => ({
+  type: "CLOSE_DELETE_USER_FROM_GROUP"
+});

@@ -17,7 +17,7 @@
 <mapper namespace="org.sjimenez.chatapp.mappers.UserMapper">
     <!--get all messages of a group-->
     <select id="selectGroupsFromUserById" resultType="org.sjimenez.chatapp.model.Group">
-        select distinct  chat.`group`.idgroup,chat.`group`.name,chat.`group`.creation
+        select distinct  chat.`group`.idgroup,chat.`group`.name,chat.`group`.creation,chat.`group`.admin
         from chat.user_group inner join chat.`group` on chat.`group`.idgroup=chat.user_group.idgroup_user_group
         and chat.user_group.iduser_user_group=#{iduser};
     </select>

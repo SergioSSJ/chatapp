@@ -66,10 +66,10 @@ public class GroupControllerTest {
 
 	@Test
 	public void createGroup() {
-		when(groupDelegate.createGroup(testGroupBean.getName())).thenReturn(testGroupBean);
-		ResponseEntity<Group> responseEntity = groupController.createGroup(testGroupBean.getName());
+		when(groupDelegate.createGroup(testGroupBean.getName(),null)).thenReturn(testGroupBean);
+		ResponseEntity<Group> responseEntity = groupController.createGroup(testGroupBean.getName(),null);
 
-		verify(groupDelegate).createGroup(testGroupBean.getName());
+		verify(groupDelegate).createGroup(testGroupBean.getName(),null);
 		assertThat( responseEntity.getStatusCode(), is(HttpStatus.OK) );
 		assertThat( responseEntity.getBody().getName(), is(testGroupBean.getName( )) );
 		assertThat( responseEntity.getBody().getIdgroup(), is(testGroupBean.getIdgroup()) );

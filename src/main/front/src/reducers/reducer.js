@@ -55,6 +55,19 @@ export const showAddUserToGroupModel = (state = { showAddUserToGroupState: false
       return state;
   }
 };
+export const showDeleteUserFromGroupModel = (state = { showDeleteUserFromGroupState: false }, action) => {
+
+  switch (action.type) {
+    case "CLOSE_DELETE_USER_FROM_GROUP": {
+      return { showDeleteUserFromGroupState: false };
+    }
+    case "SHOW_DELETE_USER_FROM_GROUP": {
+      return { showDeleteUserFromGroupState: true };
+    }
+    default:
+      return state;
+  }
+};
 
 
 export const reducers = combineReducers({
@@ -62,5 +75,6 @@ export const reducers = combineReducers({
   showModel,
   showCreateGroupModel,
   showAddUserToGroupModel, 
+  showDeleteUserFromGroupModel,
   routing:routerReducer
 });

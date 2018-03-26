@@ -10,7 +10,16 @@ public class Group {
     private int idgroup;
     private String name;
     private LocalDate creation;
+    private String admin;
 
+
+    public String getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(String admin) {
+        this.admin = admin;
+    }
 
     //UserList
     private List<User> userList;
@@ -55,13 +64,15 @@ public class Group {
         Group group = (Group) o;
         return idgroup == group.idgroup &&
                 Objects.equals(name, group.name) &&
-                Objects.equals(creation, group.creation);
+                Objects.equals(creation, group.creation) &&
+                Objects.equals(admin, group.admin) &&
+                Objects.equals(userList, group.userList);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(idgroup, name, creation);
+        return Objects.hash(idgroup, name, creation, admin, userList);
     }
 
     @Override
@@ -70,6 +81,7 @@ public class Group {
                 "idgroup=" + idgroup +
                 ", name='" + name + '\'' +
                 ", creation=" + creation +
+                ", admin='" + admin + '\'' +
                 ", userList=" + userList +
                 '}';
     }

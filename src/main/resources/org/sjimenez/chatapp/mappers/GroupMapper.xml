@@ -107,7 +107,7 @@
     <!--insertGroup-->
     <insert id="insertGroup" parameterType="org.sjimenez.chatapp.model.Group" useGeneratedKeys="true"
             keyProperty="idgroup" keyColumn="idgroup">
-        insert into chat.`group`(name,creation) values(#{name},#{creation})
+        insert into chat.`group`(name,creation,admin) values(#{name},#{creation},#{admin})
     </insert>
 
     <!--<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<-->

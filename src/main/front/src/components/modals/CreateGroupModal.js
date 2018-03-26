@@ -120,13 +120,17 @@ let CreateGroupModal = (function() {
         window.alert("Complete los campos de manera correcta");
         return;
       }
+      var formData = new FormData();
+      formData.append("admin", this.props.user_name);
       var url = `http://localhost:8080/group/${data.name}`;
       fetch(url, {
         method: "POST",
         credentials: "include",
+        
         headers: new Headers({
           Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
-        })
+        }),
+        body:formData
       })
         .then(response => {
           if (!response.ok) {
